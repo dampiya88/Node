@@ -10,7 +10,6 @@ app.get("/", (req, res, next)=>{
 })
 
 app.get("/", (req, res) => {
-  console.log("Mid 2")
   res.send("Hello");
 });
 
