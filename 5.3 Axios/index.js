@@ -17,10 +17,6 @@ app.get("/", async (req, res) => {
     const response = await axios.get("https://bored-api.appbrewery.com/random");
     const result = response.data;
     res.render("index.ejs", { data: result });
-    const type = req.type;
-    const participants = req.participants;
-    const filtered=  await axios.get(`https://bored-api.appbrewery/filter??type=education?${type}&participants${participants}`);
-    console.log(filtered)
   } catch (error) {
     console.error("Failed to make request:", error.message);
     res.render("index.ejs", {
@@ -29,19 +25,26 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/filter", async(req, res)=>{
-  console.log(req);
-  let type=req.type;
-  // let participants = req.data.participants;
+app.post("/", async(req, res)=>{
+  const type = req.body.type;
+  const participants = req.body.participants;
   try{
-    console.log(response);
+    const response = await axios.get(`https://bored-api.appbrewery.com/filter/?type=${type}&participants=${participants}`);
+      console.log("unfiletered",result);
+    if(response.length > 0){
+      res.render("index.ejs", { data: result });
+    }else{
+      console.log("NO result",response);
+      res.render("index.ejs",{ data: "No activities that match your criteria."} );
+    }
   }catch{
   }
-
 });
 
-app.post("/", async (req, res) => {
-  console.log(req.body);
+function getRandomObject(arr) {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
+}
 
   // Step 2: Play around with the drop downs and see what gets logged.
   // Use axios to make an API request to the /filter endpoint. Making
@@ -51,7 +54,6 @@ app.post("/", async (req, res) => {
   // Step 3: If you get a 404 error (resource not found) from the API request.
   // Pass an error to the index.ejs to tell the user:
   // "No activities that match your criteria."
-});
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
